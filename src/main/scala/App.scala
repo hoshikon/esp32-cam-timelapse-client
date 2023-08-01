@@ -13,15 +13,17 @@ object App extends IOApp.Simple:
       .leftMap(errors => new RuntimeException(s"Failed to read configs:${errors.toList.mkString("\n", "\n", "\n")}"))
     for
       config <- IO.fromEither(configOrError)
-      _ <- IO.println("starting ESP32-CAM client")
       start <- IO.realTimeInstant
+      completionTime = start.plusSeconds(config.totalDuration.toSeconds)
+      _ <- IO.println(s"starting ESP32-CAM client. Job completion time: $completionTime")
       _ <- EmberClientBuilder.default[IO].build.use { client =>
         val imageServerClient = ImageServerClient[IO](client, config.imageServerUri, config.imageDir)
         fs2.Stream.fixedRate[IO](config.intervals)
           .evalMap(_ => imageServerClient.getImage)
-          .takeWhile(_ => Instant.now().isBefore(start.plusSeconds(config.totalDuration.toSeconds)))
+          .takeWhile(_ => Instant.now().isBefore(completionTime))
           .compile
           .drain
       }
+      _ <- IO.println("Job completed, stopping now...")
     yield ()
 
