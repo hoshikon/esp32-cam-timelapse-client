@@ -15,6 +15,8 @@ lazy val root = project
       "org.http4s" %% "http4s-ember-server" % http4sVersion,
       "org.http4s" %% "http4s-dsl" % http4sVersion,
       "co.fs2" %% "fs2-core" % "3.7.0",
+      "org.typelevel" %% "log4cats-slf4j" % "2.6.0",
+      "ch.qos.logback" % "logback-classic" % "1.4.7",
       "org.scalameta" %% "munit" % "0.7.29" % Test
     )
   )
