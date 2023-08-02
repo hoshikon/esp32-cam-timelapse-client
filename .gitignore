@@ -36,3 +36,4 @@ hs_err_pid*
 
 #repo specific
 ./images/
+./logs/
